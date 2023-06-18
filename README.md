@@ -1,12 +1,12 @@
-This is a main authentication part of my api.txpint.com, all solutions I looked at where too expensive, brought too much unessecary feature or had terrible documenation. The solution I created here is best for implementing an api the easy way.
+This is a main authentication part of my api.txpint.com, all solutions I looked at were too expensive, brought too much necessary feature or had terrible documentation. The solution I created here is best for implementing an API the easy way.
 
 TODO:
 
 -Add universal error numbers instead of displaying number
 
--Make production changes and make a seperate branch {you can do this yourself}
+-Make production changes and make a separate branch {you can do this yourself}
 
-RECCOMENED IF YOU ARE SERIOUS ABOUT USING THIS:
+RECOMMENDED IF YOU ARE SERIOUS ABOUT USING THIS:
 
 -Edit the error codes to be more generic, remove the raw error outputs 
 
