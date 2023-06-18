@@ -8,5 +8,6 @@ RECCOMENED IF YOU ARE SERIOUS ABOUT USING THIS:
 -Edit the error codes to be more generic, remove the raw error outputs 
 -Change the DB to MySQL/MariaDB (otherwise I wish you well)
 -Tweak it to your use-case
+-Change the public keys
 
 For anyone other than me this code is more of a boilerplate but like any boilerplate it has infinite possibilities.
