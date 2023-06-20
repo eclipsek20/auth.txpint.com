@@ -2,6 +2,8 @@ This is a main authentication part of my api.txpint.com, all solutions I looked 
 
 TODO:
 
+-Use variables instead of hard code
+
 -Add universal error numbers instead of displaying number
 
 -Make production changes and make a separate branch {you can do this yourself}
