@@ -1,21 +1,17 @@
 package main
 
 import (
-	"bytes"
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/crypto/openpgp"
 )
 
 var db *sql.DB
@@ -304,53 +300,35 @@ func pwdhash(c *gin.Context) {
 
 // Functions that are not directly called
 
-func addsigverify(userID int64, password, ip, signature string) bool {
-	data := fmt.Sprintf("%d:%s:%s", userID, password, ip)
-	// Get the public key from the file
-	publicKey, err := readPublicKeyFromFile("public_intercom_key.pem")
+func addsigverify(userID int64, password string, ip string, signature string) bool {
+	fmt.Println("LOADED INPUT: ", userID, password, ip, signature)
+	// Parse the JWT token
+	token, err := jwt.Parse(signature, func(token *jwt.Token) (interface{}, error) {
+		// Check the signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("invalid signing method")
+		}
+		// Return the secret key
+		return []byte("fanta"), nil
+	})
 	if err != nil {
-		fmt.Println("Failed to read public key from file:" + err.Error())
 		return false
 	}
-
-	// Decode the signature from base64
-	signatureBytes, err := base64.StdEncoding.DecodeString(signature)
-	if err != nil {
-		fmt.Println("Invalid signature:" + err.Error())
+	// Verify the claims
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if int64(claims["userid"].(float64)) != userID {
+			return false
+		}
+		if claims["password"].(string) != password {
+			return false
+		}
+		if claims["ip"].(string) != ip {
+			return false
+		}
+		return false
+	} else {
 		return false
 	}
-
-	// Verify the signature using the public key
-	entityList, err := openpgp.ReadArmoredKeyRing(bytes.NewBuffer(publicKey))
-	if err != nil {
-		fmt.Println("Failed to read public key:" + err.Error())
-		return false
-	}
-	if len(entityList) != 1 {
-		fmt.Println("Invalid public key")
-		return false
-	}
-	entity := entityList[0]
-	signedData := strings.NewReader(data)
-	entityList = openpgp.EntityList{entity}
-	_, err = openpgp.CheckDetachedSignature(entityList, signedData, bytes.NewReader(signatureBytes))
-	if err != nil {
-		fmt.Println("Invalid signature" + err.Error())
-		return false
-	}
-
-	// Signature is valid
-	return true
-}
-
-func readPublicKeyFromFile(filename string) ([]byte, error) {
-	// Read the public key from the file
-	publicKey, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	return publicKey, nil
 }
 
 func generateToken() (string, error) {
