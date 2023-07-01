@@ -16,6 +16,6 @@ RECOMMENDED IF YOU ARE SERIOUS ABOUT USING THIS:
 
 -Tweak it to your use-case
 
--Change the public keys
+-Change the jwt private key
 
 For anyone other than me this code is more of a boilerplate but like any boilerplate it has infinite possibilities.
